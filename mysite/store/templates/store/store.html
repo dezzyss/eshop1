@@ -1,0 +1,19 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+	<div class="row">
+		{% for product in products %}
+		<div class="col-lg-4">
+			<img class="thumbnail" src="{% static 'images/placeholder.png' %}">
+			<div class="box-element product">
+				<h6><strong>Produkt</strong></h6>
+				<hr>
+				<button  class="btn btn-outline-secondary add-btn">Přidat do košíku</button>
+				<a class="btn btn-outline-success" href="#">Zobrazit</a>
+				<h4 style="display: inline-block; direction: rtl"><strong>CZK</strong></h4>
+				<!--misto direction:rtl jsem mel float: right-->
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+{% endblock content %}
