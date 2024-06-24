@@ -1,0 +1,25 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    {% for product in products %}
+    <div class="col-lg-4">
+        <a href="./product?id={{product.id}}">
+            <img class="thumbnail" src="{{product.imageURL}}">
+        </a>
+            <div class="box-element product">
+                <h6><strong>{{ product.name }}</strong></h6>
+                <hr>
+              
+                <div class="d-flex justify-content-between align-items-center">
+                    <button data-product="{{ product.id }}" data-action="add" class="btn btn-outline-secondary add-btn btn-sm update-cart">Přidat do košíku</button>
+                    <a href="./product?id={{product.id}}" class="btn btn-outline-success btn-sm">Zobrazit</a>
+                    <h4 class="ml-auto"><strong>{{ product.price|floatformat:2 }} Kč</strong></h4>
+                </div>
+            </div>
+        </div>
+
+    {% endfor %}
+</div>
+{% endblock content %}

@@ -7,4 +7,10 @@ admin.site.register(Order)
 admin.site.register(OrderItem)
 admin.site.register(ShippingAdress)
 
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price', 'digital', 'description')
+
+# admin.site.register(Product, ProductAdmin)
+
+
 # Register your models here.

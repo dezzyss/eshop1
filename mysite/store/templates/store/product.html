@@ -1,0 +1,23 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+
+<div class="col-6 mx-auto">
+    <img class="fullphoto" src="{{ product.imageURL }}">
+    <div class="box-element product">
+        {% if product %}
+            <h1>{{ product.name }}</h1>
+            <p>{{ product.description }}</p>
+            <p>{{ product.price }}</p>
+        {% else %}
+            <p>Product not found.</p>
+        {% endif %}
+        <hr>
+        <div class="d-flex justify-content-between align-items-center">
+            <button class="btn btn-outline-secondary add-btn btn-sm">Přidat do košíku</button>
+            <h4 class="ml-auto"><strong>{{ product.price|floatformat:2 }} Kč</strong></h4>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
