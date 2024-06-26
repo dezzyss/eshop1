@@ -9,12 +9,17 @@ class Customer(models.Model):
     def __str__(self):
         return self.name 
     
+class Category(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, null=True)
+    
 class Product(models.Model):
     name = models.CharField(max_length=200)
     price = models.FloatField()
-    digital = models.BooleanField(default=False)  # default=False stačí, null=True a blank=True jsou zbytečné
+    digital = models.BooleanField(default=False)  # default=False stačí, null=True a blank=True jsou zbytečné #boolean = 1 nebo 0 (true or false)
     image = models.ImageField(null=True, blank=True)  # Použít default=, pokud chcete specifikovat výchozí obrázek
     description = models.TextField(null=True, blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
 
     def __str__(self):
         return self.name
@@ -71,6 +76,8 @@ class ShippingAdress(models.Model):
 
     def __str__(self):
         return self.address
+    
+
     
     
 # Create your models here.
