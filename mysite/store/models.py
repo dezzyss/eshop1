@@ -15,7 +15,7 @@ class Category(models.Model):
     
 class Product(models.Model):
     name = models.CharField(max_length=200)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=9, decimal_places=2)
     digital = models.BooleanField(default=False)  # default=False stačí, null=True a blank=True jsou zbytečné #boolean = 1 nebo 0 (true or false)
     image = models.ImageField(null=True, blank=True)  # Použít default=, pokud chcete specifikovat výchozí obrázek
     description = models.TextField(null=True, blank=True)
@@ -43,6 +43,17 @@ class Order(models.Model):
         return str(self.id)
     
     @property
+    def shipping(self):
+        shipping = False
+        orderitems = self.orderitem_set.all()
+        for i in orderitems:
+            if i.product.digital == False:
+                shipping = True
+                
+
+        return shipping
+    
+    @property
     def get_cart_total(self):
         orderitems = self.orderitem_set.all()
         total = sum([item.get_total for item in orderitems])
@@ -65,10 +76,10 @@ class OrderItem(models.Model):
         total = self.product.price * self.quantity 
         return total 
 
-class ShippingAdress(models.Model):
+class ShippingAddress(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
-    adress = models.CharField(max_length=200, null=True)
+    address = models.CharField(max_length=200, null=True)
     city = models.CharField(max_length=200, null=True)
     state = models.CharField(max_length=200, null=True)
     zipcode = models.CharField(max_length=5, null=True) #protoze ma PSC ma jen 5 cisel

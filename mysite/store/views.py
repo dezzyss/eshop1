@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 import json
+import datetime
 from .models import *
 
 
@@ -15,8 +16,7 @@ def store(request):
         cartItems = order.get_cart_items
     
     else:
-        # Vytvoří prázdnou objednávku pro nepřihlášeného uživatele
-        order = {'get_cart_total': 0, 'get_cart_items': 0}
+        order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping':False}
         items = []
         cartItems = order['get_cart_items']
 
@@ -40,10 +40,12 @@ def cart(request):
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
     else:
         items = []
-        order = {'get_cart_total':0, 'get_cart_items':0}
-    context = {'items': items, 'order': order}
+        order = {'get_cart_total':0, 'get_cart_items':0, 'shipping':False}
+        cartItems = order['get_cart_items']
+    context = {'items': items, 'order': order, 'cartItems': cartItems,}
     return render(request, 'store/cart.html', context)
 
 
@@ -52,12 +54,15 @@ def checkout(request):
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items = order.orderitem_set.all() 
+        cartItems = order.get_cart_items
     else:
         # Vytvoří prázdnou objednávku pro nepřihlášeného uživatele
-        order = {'get_cart_total': 0, 'get_cart_items': 0}
+        order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping':False}
         items = []
+        cartItems = order['get_cart_items']
+        
 
-    context = {'items': items, 'order': order}
+    context = {'items': items, 'order': order, 'cartItems': cartItems}
     return render(request, 'store/checkout.html', context)
 
 def product(request):
@@ -75,9 +80,23 @@ def search_view(request):
     }
     return render(request, 'store/search_results.html', context)
 
-def product_detail(request, id):
-    product = get_object_or_404(Product, id=id)
-    return render(request, 'store/product_detail.html', {'product': product})
+def product_detail(request):
+    product_id = request.GET.get('id')
+    product = get_object_or_404(Product, id=product_id)
+
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        cartItems = order.get_cart_items()
+    else:
+        cartItems = 0
+
+    context = {
+        'product': product,
+        'cartItems': cartItems
+    }
+
+    return render(request, 'store/product_detail.html', context)
 
 def updateItem(request):
     data = json.loads(request.body)
@@ -104,6 +123,43 @@ def updateItem(request):
 
 
     return JsonResponse('Item was added', safe=False)
+
+def processOrder(request):
+    transaction_id = datetime.datetime.now().timestamp()
+    data = json.loads(request.body)
+    
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    else:
+        customer, created = Customer.objects.get_or_create(
+            email=data['form']['email'],
+        )
+        customer.name = data['form']['name']
+        customer.save()
+        
+        order = Order.objects.create(
+            customer=customer, complete=False,
+        )
+    
+    total = float(data['form']['total']) 
+    order.transaction_id = transaction_id
+    
+    if total == order.get_cart_total:
+        order.complete = True
+    order.save()
+
+    if order.shipping:
+        ShippingAddress.objects.create(
+            customer=customer,
+            order=order,
+            address=data['shipping']['address'],
+            city=data['shipping']['city'],
+            state=data['shipping']['state'],
+            zipcode=data['shipping']['zipcode'],
+        )
+    
+    return JsonResponse('Payment submitted..', safe=False)
 
 
 

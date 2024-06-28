@@ -10,7 +10,12 @@
         <h2>{{ product.name }}</h2>
         <p>{{ product.description }}</p>
         <p>Cena: {{ product.price|floatformat:2 }} Kč</p>
-        <button class="btn btn-outline-secondary add-btn">Přidat do košíku</button>
+        <button class="btn btn-outline-secondary update-cart" data-product="{{ product.id }}" data-action="add">Přidat do košíku</button>
     </div>
+</div>
+
+<!-- Zobrazení počtu položek v košíku -->
+<div class="cart-summary">
+    <h4>Počet položek v košíku: {{ cartItems }}</h4>
 </div>
 {% endblock %}
