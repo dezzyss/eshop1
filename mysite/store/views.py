@@ -3,20 +3,19 @@ from django.http import JsonResponse
 import json
 import datetime
 from .models import *
+from .utils import cookieCart
 
 
 
 
 def store(request):
-
     if request.user.is_authenticated:
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items = order.orderitem_set.all() 
         cartItems = order.get_cart_items
-    
     else:
-        order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping':False}
+        order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
         items = []
         cartItems = order['get_cart_items']
 
@@ -42,12 +41,18 @@ def cart(request):
         items = order.orderitem_set.all()
         cartItems = order.get_cart_items
     else:
-        items = []
-        order = {'get_cart_total':0, 'get_cart_items':0, 'shipping':False}
-        cartItems = order['get_cart_items']
-    context = {'items': items, 'order': order, 'cartItems': cartItems,}
-    return render(request, 'store/cart.html', context)
+        cookieData = cookieCart(request)
+        cartItems = cookieData['cartItems']
+        order = cookieData['order']
+        items = cookieData['items']
 
+    # Debugging prints
+    print("Items in cart view:", items)
+    print("Order in cart view:", order)
+    print("Cart Items in cart view:", cartItems)
+
+    context = {'items': items, 'order': order, 'cartItems': cartItems}
+    return render(request, 'store/cart.html', context)
 
 def checkout(request):
     if request.user.is_authenticated:
@@ -80,14 +85,13 @@ def search_view(request):
     }
     return render(request, 'store/search_results.html', context)
 
-def product_detail(request):
-    product_id = request.GET.get('id')
+def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
     if request.user.is_authenticated:
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        cartItems = order.get_cart_items()
+        cartItems = order.get_cart_items
     else:
         cartItems = 0
 

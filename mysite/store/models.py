@@ -20,6 +20,7 @@ class Product(models.Model):
     image = models.ImageField(null=True, blank=True)  # Použít default=, pokud chcete specifikovat výchozí obrázek
     description = models.TextField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
+    stock = models.IntegerField(default = 0)
 
     def __str__(self):
         return self.name

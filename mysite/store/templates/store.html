@@ -28,6 +28,9 @@
                 <button data-product="{{ product.id }}" data-action="add" class="btn btn-outline-secondary add-btn btn-sm update-cart">Přidat do košíku</button>
                 <a href="./product?id={{product.id}}" class="btn btn-outline-success btn-sm">Zobrazit</a>
                 <h4 class="ml-auto"><strong>{{ product.price|floatformat:2 }} Kč</strong></h4>
+                {% if not product.digital %}
+                    <p class="ml-auto">Skladem: {{ product.stock }}</p>
+                {% endif %}
             </div>
         </div>
     </div>

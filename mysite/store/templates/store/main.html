@@ -32,25 +32,25 @@
     }
     const csrftoken = getToken('csrftoken');
 
-    function getCookie(name) {  // nevim proc, ale console.log cart was created se mi neukazuje
-    var cookieArr = document.cookie.split(";");
-    for (var i = 0; i < cookieArr.length; i++) {
+    function getCookie(name) {  
+      var cookieArr = document.cookie.split(";");
+      for (var i = 0; i < cookieArr.length; i++) {
         var cookiePair = cookieArr[i].split("=");
-        if (name === cookiePair[0].trim()) {
-            return decodeURIComponent(cookiePair[1]);
+        if (name == cookiePair[0].trim()) {
+          return decodeURIComponent(cookiePair[1]);
         }
+      }
+      return null;
     }
-    return null;
-}
 
-var cart = JSON.parse(getCookie('cart'));
-if (cart === undefined || cart === null) {
-    cart = {};
-    console.log('Cart was created');
-    document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/';
-}
+    var cart = JSON.parse(getCookie('cart'));
+    if (cart == undefined) {
+      cart = {};
+      console.log('Cart was created!');
+      document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+    }
 
-console.log('Cart:', cart);
+    console.log('Cart:', cart);
   </script>
 
 </head>
@@ -68,24 +68,6 @@ console.log('Cart:', cart);
         <li class="nav-item active">
           <a class="nav-link" href="{% url 'store' %}">Obchod <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Kontakt</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Dropdown
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Akce</a>
-            <a class="dropdown-item" href="#">Další akce</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Něco dalšího</a>
-          </div>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" href="#">Zakázáno</a>
-        </li>
       </ul>
 
       <!-- Formulář pro vyhledávání -->
@@ -94,11 +76,9 @@ console.log('Cart:', cart);
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Hledat</button>
       </form>
 
-
-
       <!-- Odkazy na přihlášení a košík -->
       <div class="form-inline my-2 my-lg-0">
-        <a href="#" class="btn btn-warning">Přihlásit se</a>
+      <!--<a href="#" class="btn btn-warning">Přihlásit se</a>  -->
         <a href="{% url 'cart' %}">
           <img id="cart-icon" src="{% static 'images/cart.png' %}">
         </a>
