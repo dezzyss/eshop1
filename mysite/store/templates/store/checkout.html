@@ -140,7 +140,7 @@
             .then((data) => {
                 console.log('Success:', data);
                 alert('Transaction completed');
-                window.location.href = "{% url 'store' %}";
+                window.location.href = "{% url 'order_summary' 0 %}".replace('0', data.order_id);
             })
             
         }
