@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 import json
 import datetime
@@ -151,19 +151,31 @@ def processOrder(request):
     
     if total == order.get_cart_total:
         order.complete = True
-    order.save()
+        order.save()
 
-    if order.shipping:
-        ShippingAddress.objects.create(
-            customer=customer,
-            order=order,
-            address=data['shipping']['address'],
-            city=data['shipping']['city'],
-            state=data['shipping']['state'],
-            zipcode=data['shipping']['zipcode'],
-        )
-    
-    return JsonResponse('Payment submitted..', safe=False)
+        if order.shipping:
+            ShippingAddress.objects.create(
+                customer=customer,
+                order=order,
+                address=data['shipping']['address'],
+                city=data['shipping']['city'],
+                state=data['shipping']['state'],
+                zipcode=data['shipping']['zipcode'],
+            )
+        
+        # Redirect to order summary page after successfully completing the order
+        return redirect('order_summary', order_id=order.id)
+    else:
+        return JsonResponse('Failed to complete payment.', safe=False)
+
+def order_summary(request, order_id):
+    order = get_object_or_404(Order, id=order_id, customer=request.user.customer, complete=True)
+    order_items = OrderItem.objects.filter(order=order)
+    context = {
+        'order': order,
+        'order_items': order_items,
+    }
+    return render(request, 'store/order_summary.html', context)
 
 
 

@@ -1,0 +1,27 @@
+{% extends 'store/main.html' %}
+{% block content %}
+<h2>Order Summary</h2>
+<p>ID Objednávky: {{ order.id }}</p>
+<p>Datum objednávky: {{ order.date_ordered }}</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Produkt</th>
+            <th>Množství</th>
+            <th>Celkem</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in order_items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.get_total }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p>Celkem: {{ order.get_cart_total }}</p>
+{% endblock %}

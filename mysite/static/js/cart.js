@@ -8,9 +8,9 @@ for (var i = 0; i < updateBtns.length; i++) {
 
         console.log('USER:', user); 
         if (user.trim() === 'AnonymousUser') {
-            addCookieItem(productId, action)
+            addCookieItem(productId, action);
         } else {
-            updateUserOrder(productId, action)
+            updateUserOrder(productId, action);
         }
     });
 }
@@ -39,31 +39,30 @@ function addCookieItem(productId, action) {
     document.cookie = 'cart=' + encodeURIComponent(JSON.stringify(cart)) + ';domain=;path=/';
     location.reload();
 }
-    
-
 
 function updateUserOrder(productId, action){
     console.log('User is logged in, sending data..')
 
-        var url = '/update_item/'
+    var url = '/update_item/';
 
-        fetch(url, {
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json',
-                'X-CSRFToken':csrftoken,
-            },
-            body: JSON.stringify({ 'productId': productId, 'action': action })
-        })
-        .then((response) => {
-            return response.json();    
-        })
-        .then((data) => {
-            console.log('data:', data)
-            location.reload();
-        });
+    fetch(url, {
+        method:'POST',
+        headers:{
+            'Content-Type':'application/json',
+            'X-CSRFToken':csrftoken,
+        },
+        body: JSON.stringify({ 'productId': productId, 'action': action })
+    })
+    .then((response) => {
+        return response.json();    
+    })
+    .then((data) => {
+        console.log('data:', data);
+        if (data === 'Payment submitted..') {
+            // Redirect to order summary page after successful payment
+            window.location.href = '/order_summary/' + data.order_id + '/';
+        } else {
+            location.reload(); // Reload the page for other responses
+        }
+    });
 }
-
-
-// VALIDACE KOLIK JE KUSU NA SKLADE
-// FILTROVANI = CO SE STANE KDYZ KLIKNU NA TLACITKO
