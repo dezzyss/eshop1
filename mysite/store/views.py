@@ -164,7 +164,7 @@ def processOrder(request):
             )
         
         # Redirect to order summary page after successfully completing the order
-        return redirect('order_summary', order_id=order.id)
+        return JsonResponse({'order_id': order.id}, safe=False)
     else:
         return JsonResponse('Failed to complete payment.', safe=False)
 
